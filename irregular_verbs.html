@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<style type="text/css">
+		* {
+			margin: 0;
+			padding: 0;
+			font-size: 100%;
+			color: #000;}
+		body {
+			font-family: Roboto, Arial, sans-serif;
+			direction: ltr;
+			background-color: #212121;}
+		.letter_case {
+			text-transform: capitalize;
+		}
+		.window {
+			background-color: #ffffff;
+			border-radius: 15px;
+			margin: 68px auto;
+			padding: 12px;
+			width: 500px;
+		}
+		.title {
+			text-align: center;
+			font-size: 2rem;
+			padding: 8px;
+		}
+		.counter_item {
+			text-align: center;
+			font-size: 0.75rem;
+		}
+		.answer_container {
+			display: block;
+			box-sizing: border-box;
+			width: 100%;
+		}
+		.answer_label {
+			display: inline-block;
+			width: 120px;
+			margin: 8px;
+			font-size: 1.1rem;
+		}
+		.answer_input {
+			width: 340px;
+			margin: 4px;
+			padding: 4px;
+			font-size: 1.2rem;
+			border-radius: 4px;
+		}
+		.disabled {
+			color: #6c6c6c;
+			border: 1px solid #6c6c6c;
+		}
+		.ready {			
+			color: #212121;
+			border: 1px solid #4caf50;
+		}
+		.error {
+			background-color: #ffcdd2;
+		}
+		.dashboard {
+			display: flex;
+			padding: 8px;
+		}
+		.dashboard_item {
+			width: 33%;
+			color: #6c6c6c;
+			font-size: 1.2rem;
+			padding: 12px;
+			box-sizing: border-box;
+			border-width: 1px;
+			user-select: none;
+			border-radius: 4px;
+		}
+		.button {
+			background-color: #4caf50;
+			border: none;
+			color: white;
+			text-decoration: none;
+			display: inline-block;
+			cursor: pointer;
+			text-align: center;
+		}
+		.conrats_msg {
+			text-align: center;
+			font-size: 1.2rem;
+		}
+	</style>
+	<script type="text/javascript">
+		let scoreValue =-1;
+		let helpCount = 0;
+		let currentWordNum = 0;
+		let currentAnswerNum = 0;
+		let maxCount = 3;
+		let currentCount = 0;
+		const times = ['First form:', 'Second form:', 'Third form:'];
+		const words = [
+			{'english': ['be', 'was, were', 'been'], 'russian': 'быть'},
+			{'english': ['become', 'became', 'become'], 'russian': 'становиться'},
+			{'english': ['begin', 'began', 'begun'], 'russian': 'начинать'},
+			{'english': ['break', 'broke', 'broken'], 'russian': 'ломать'},
+			{'english': ['build', 'build', 'build'], 'russian': 'строить'},
+			{'english': ['buy', 'bought', 'bought'], 'russian': 'покупать'},
+			{'english': ['choose', 'chose', 'chosen'], 'russian': 'выбирать'},
+			{'english': ['come', 'came', 'come'], 'russian': 'приходить'},
+			{'english': ['cut', 'cut', 'cut'], 'russian': 'резать'},
+			{'english': ['do', 'did', 'done'], 'russian': 'делать'},
+			{'english': ['drink', 'drank', 'drunk'], 'russian': 'пить'},
+			{'english': ['drive', 'drove', 'driven'], 'russian': 'водить'},
+			{'english': ['eat', 'ate', 'eaten'], 'russian': 'кушать'},
+			{'english': ['fall', 'fell', 'fallen'], 'russian': 'падать'},
+			{'english': ['feel', 'felt', 'felt'], 'russian': 'чувствовать'},
+			{'english': ['find', 'found', 'found'], 'russian': 'искать'},
+			{'english': ['fly', 'flew', 'flown'], 'russian': 'летать'},
+			{'english': ['forget', 'forgot', 'forgotten'], 'russian': 'забывать'},
+			{'english': ['get', 'got', 'got'], 'russian': 'получать'},
+			{'english': ['give', 'gave', 'given'], 'russian': 'давать'},
+			{'english': ['go', 'went', 'gone'], 'russian': 'идти'},
+			{'english': ['grow', 'grew', 'grown'], 'russian': 'расти'},
+			{'english': ['have', 'had', 'had'], 'russian': 'иметь'},
+			{'english': ['hear', 'heard', 'heard'], 'russian': 'слышать'},
+			{'english': ['hurt', 'hurt', 'hurt'], 'russian': 'причинять боль'},
+			{'english': ['kept', 'kept', 'kept'], 'russian': 'хранить'},
+			{'english': ['know', 'knew', 'known'], 'russian': 'знать'},
+			{'english': ['leave', 'left', 'left'], 'russian': 'оставить'},
+			{'english': ['lose', 'lost', 'lost'], 'russian': 'терять'},
+			{'english': ['make', 'made', 'made'], 'russian': 'делать'},
+			{'english': ['meet', 'met', 'met'], 'russian': 'встречать'},
+			{'english': ['pay', 'paid', 'paid'], 'russian': 'платить'},
+			{'english': ['put', 'put', 'put'], 'russian': 'ложить'},
+			{'english': ['read', 'read', 'read'], 'russian': 'читать'},
+			{'english': ['run', 'ran', 'run'], 'russian': 'бегать'},
+			{'english': ['say', 'said', 'said'], 'russian': 'говорить'},
+			{'english': ['see', 'saw', 'seen'], 'russian': 'смотреть'},
+			{'english': ['send', 'sent', 'sent'], 'russian': 'посылать'},
+			{'english': ['sing', 'sang', 'sung'], 'russian': 'петь'},
+			{'english': ['sit', 'sat', 'sat'], 'russian': 'сидеть'},
+			{'english': ['sleep', 'slept', 'slept'], 'russian': 'спать'},
+			{'english': ['speak', 'spoke', 'spoken'], 'russian': 'говорить'},
+			{'english': ['spend', 'spend', 'spend'], 'russian': 'тратить, проводить'},
+			{'english': ['stand', 'stood', 'stood'], 'russian': 'стоять'},
+			{'english': ['swim', 'swam', 'swum'], 'russian': 'плавать'},
+			{'english': ['take', 'took', 'taken'], 'russian': 'взять, брать'},
+			{'english': ['tell', 'told', 'told'], 'russian': 'рассказывать, сказать'},
+			{'english': ['think', 'thought', 'thought'], 'russian': 'думать'},
+			{'english': ['win', 'won', 'won'], 'russian': 'выигрывать'},
+			{'english': ['write', 'wrote', 'written'], 'russian': 'писать'}]
+	</script>
+	<script type="text/javascript">
+		function getMainContainer() {
+			return document.getElementById('question_tab');
+		}
+		function showQuestions (word) {
+			const container = getMainContainer();
+			const title = document.createElement('p');
+			title.classList.add('letter_case');
+			title.classList.add('title');
+			title.innerText = word.russian;
+			container.appendChild(title);
+			const counter = document.createElement('div');
+			counter.classList.add('counter_item');
+			counter.innerText = currentCount + ' out of ' + maxCount;
+			container.appendChild(counter);
+			const answers = getAnswers(word.english, currentAnswerNum);
+			const dashboard = getDashboard(word, answers);
+			container.appendChild(answers);
+			container.appendChild(dashboard);
+		}
+		function getDashboard(word, answers) {
+			const containerDashboard = document.createElement('div');
+			containerDashboard.classList.add('dashboard');
+			const score = document.createElement('div');
+			score.id = 'score';
+			score.classList.add('dashboard_item');
+			const scoreboard = document.createElement('div');
+			scoreboard.id = 'helpboard';
+			scoreboard.classList.add('dashboard_item');
+			const button = document.createElement('div');
+			button.innerText = 'Submit';
+			button.classList.add('dashboard_item');
+			button.classList.add('button');
+			button.onclick = submitAction(word, answers);
+			containerDashboard.appendChild(score);
+			containerDashboard.appendChild(scoreboard);
+			containerDashboard.appendChild(button);
+			return containerDashboard;
+		}
+		function clearContainer() {
+			const container = getMainContainer();
+			while(container.firstChild) {
+				container.removeChild(container.firstChild);
+			}
+		}
+		function getAnswers(array, numAvaible) {
+			const container = document.createElement('div');
+			container.classList.add('answer_container');
+			for (var i = 0; i < array.length; i++) {
+				const label = document.createElement('span');
+				label.innerText = times[i];
+				label.classList.add('answer_label');
+				const input = document.createElement('input');
+				input.classList.add('answer_input');
+				if (numAvaible != i) {
+					input.value = array[i];
+					input.disabled = numAvaible !== i;
+					input.classList.add('disabled');
+				} else {
+					input.classList.add('ready');
+					let numWords = array[i].split(',').length - 1;
+					let value = '';
+					for (let i = 0; i < numWords; i++) {
+						value = value + ',';
+					}
+					input.value = value;
+				}
+				container.appendChild(label);
+				container.appendChild(input);
+			}
+			return container;
+		}
+		function submitAction(expected, container) {
+			return () => {
+				const actualWord = getWord(container);
+				var isCorrect = checkAnswers(expected['english'], actualWord['english']);
+				if (isCorrect) {
+					setError(false);
+					clearContainer();
+					loadNewQuestion();
+				} else {
+					setError(true);
+					let answer = expected.english[currentAnswerNum];
+					if (helpCount++ < answer.length) {
+						setHelp(answer.substring(0, helpCount));
+					}
+				}
+			}
+		}
+		function getWord(container) {
+			let word = {'english': [], 'russian': 'empty'};
+			for (child of container.getElementsByTagName('input')) {
+				word['english'].push(child.value);
+			}
+			return word;
+		}
+		function checkAnswers(expected, actual) {
+			let isEqual = expected.length === actual.length;
+			for (let i = 0; i < expected.length; i++) {
+				if (!isEqual) {break;}
+				isEqual = expected[i] === (actual[i]);
+			}
+			return isEqual;
+		}
+		function random(maxValue) {
+			return Math.floor(Math.random() * maxValue);
+		}
+		function loadNewQuestion() {
+			clearContainer();
+			if (helpCount === 0) {
+				scoreValue++;
+			}
+			if (currentCount++ < maxCount) {
+				currentWordNum = random(words.length);
+				currentAnswerNum = random(words[currentWordNum].english.length);
+				let word = words[currentWordNum];	
+				showQuestions(word);
+				setHelp('');
+				updateScore();
+				helpCount = 0;
+			} else {
+				endGame();
+			}
+		}
+		function updateScore() {
+			const scoreboard = document.getElementById('score');
+			if (scoreboard) {scoreboard.innerText = 'Score: ' + scoreValue;}
+		}
+		function setHelp(value) {
+			const helpboard = document.getElementById('helpboard');
+			if (helpboard) {helpboard.innerText = 'Hint: ' + value;}
+		}
+		function setError(isError) {
+			const scoreboard = document.getElementById('score');
+			if (isError) {
+				scoreboard.classList.add('error');
+			} else {
+				scoreboard.classList.remove('error');
+			}
+		}
+		function endGame() {
+			clearContainer();
+			const container = getMainContainer();
+			const title = document.createElement('div');
+			title.classList.add('letter_case');
+			title.classList.add('title');
+			title.innerText = 'Congratulations!';
+			container.appendChild(title);
+			const score = document.createElement('div');
+			score.classList.add('conrats_msg');
+			score.innerText = 'You score ' + scoreValue + '!';
+			const btnContainer = document.createElement('div');
+			btnContainer.classList.add('title');
+			const regameBtn = document.createElement('div');
+			regameBtn.innerText = 'Replay';
+			regameBtn.classList.add('dashboard_item');
+			regameBtn.classList.add('button');
+			regameBtn.onclick = replay();
+			btnContainer.appendChild(regameBtn);
+			container.appendChild(score);
+			container.appendChild(btnContainer);
+		}
+		function replay() {
+			return () => {
+				scoreValue = -1;
+				currentCount = 0;
+				clearContainer();
+				showMenu();
+			}
+		}		
+		function startNewGame(input) {
+			return () => {
+				if (input && input.value) {
+					maxCount = input.value;
+				} else {
+					maxCount = 10;
+				}
+				scoreValue = -1;
+				currentCount = 0;
+				clearContainer();
+				loadNewQuestion();
+			}
+		}
+		function showMenu() {
+			clearContainer();
+			const container = getMainContainer();
+			const title = document.createElement('div');
+			title.classList.add('title');
+			title.innerText = 'Learn commonly used irregular verbs';
+			container.appendChild(title);
+
+			const adjustContainer = document.createElement('div');
+			adjustContainer.classList.add('answer_container');
+			const wordCountLabel = document.createElement('span');
+			wordCountLabel.innerText = 'Set word count';
+			wordCountLabel.classList.add('answer_label');
+			const wordsCountInput = document.createElement('input');
+			wordsCountInput.classList.add('answer_input');
+			wordsCountInput.type = 'number';
+			wordsCountInput.value = 10;
+			adjustContainer.appendChild(wordCountLabel);
+			adjustContainer.appendChild(wordsCountInput);
+			container.appendChild(adjustContainer);
+
+			const btnContainer = document.createElement('div');
+			btnContainer.classList.add('title');
+			const regameBtn = document.createElement('div');
+			regameBtn.innerText = 'Start';
+			regameBtn.classList.add('dashboard_item');
+			regameBtn.classList.add('button');
+			regameBtn.onclick = startNewGame(wordsCountInput);
+			btnContainer.appendChild(regameBtn);
+			container.appendChild(btnContainer);
+		}
+	</script>
+	<script type="text/javascript">
+		    document.onreadystatechange = function(){
+            if(document.readyState === 'complete'){
+            	showMenu();
+            }
+        }
+	</script>
+</head>
+<body>
+	<div id='main_wrapper'>
+		<div id='question_tab' class='window'></div>
+	</div>	
+</body>
+</html>
